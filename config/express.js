@@ -11,7 +11,6 @@ const log_api = log4js.getLogger("api");
 
 const logger = require('../app/utils/app_utils').getLogger(__filename);
 
-const responseStatus = require('../app/libs/responseStatus');
 
 exports.config = (app) => {
   //Preventing CORS errors
@@ -26,7 +25,7 @@ exports.config = (app) => {
     );
     if (req.method === "OPTIONS") {
       res.header("Access-Control-Allow-Methods", "POST, GET");
-      return res.status(responseStatus.OK).json({});
+      return res.status(200).json({});
     }
     next();
   });
@@ -73,7 +72,7 @@ exports.ErrorHandler = (app) => {
   //Handling Errors
   app.use((req, res, next) => {
     const error = new Error("Url Not Found! Invalid URL!");
-    error.status = responseStatus.NOT_FOUND;
+    error.status = 404;
     next(error);
   });
 
@@ -82,9 +81,9 @@ exports.ErrorHandler = (app) => {
     logger.info(fullUrl)
     logger.error(error)
 
-    res.status(error.status || responseStatus.INTERNAL_SERVER_ERROR);
+    res.status(error.status || 500);
     res.json({
-      status: error.status || responseStatus.INTERNAL_SERVER_ERROR,
+      status: error.status || 500,
       success: false,
       message: error.message,
     });
